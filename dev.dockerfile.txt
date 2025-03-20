@@ -1,0 +1,19 @@
+ARG NODE_VERSION=18
+FROM node:$NODE_VERSION AS build
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+RUN npm run build --configuration=production
+
+FROM nginx:alpine
+
+COPY --from=build /app/dist/angular-frontend /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
+
+
